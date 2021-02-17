@@ -1,0 +1,30 @@
+---
+title: "Selected Topics in ChIP-seq data analysis"
+author: Tamás Schauer 
+date: 03.03.2021
+output:
+  beamer_presentation:
+    theme: "default"
+    colortheme: "beaver"
+    fonttheme: "structurebold"
+    includes:
+        in_header: settings.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, results=TRUE)
+library(knitr)
+```
+
+
+## Overview
+
+- ChIP-seq data
+- Normalization
+- Statistics
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+Source: https://github.com/tschauer/ChIPseq_Talk
+
