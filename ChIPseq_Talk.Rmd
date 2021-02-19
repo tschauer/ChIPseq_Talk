@@ -28,3 +28,179 @@ library(knitr)
 
 Source: https://github.com/tschauer/ChIPseq_Talk
 
+## ChIP coverage
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+library(csaw)
+library(edgeR)
+
+my_data_folders <- c("H3K36me3", 
+                     "H2Av", 
+                     "HMR")
+
+
+for(my_data_selection in my_data_folders){
+        
+        load(paste0(my_data_selection, "/data.dmel.rda"))
+        
+        colData(data.dmel)$bam.files <- gsub(".*//|_[G,A,T,C][G,A,T,C][G,A,T,C].*|ChIP", "", colData(data.dmel)$bam.files )
+        #data.dmel <- data.dmel[, grep(paste0(my_data_selection,"|Input"), colData(data.dmel)$bam.files)]
+        
+        
+        abundances.data.dmel <- aveLogCPM(asDGEList(data.dmel))
+        data.dmel <- data.dmel[abundances.data.dmel > 0]
+        
+        
+        assays(data.dmel)$adjc <- cpm(asDGEList(data.dmel), log=FALSE)
+
+        assign(paste("data",my_data_selection,"dmel",sep="."), data.dmel)
+
+        rm(list = "data.dmel")
+}
+```
+
+
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+my_sub_ranges <- makeGRangesFromDataFrame(data.frame(chr = "chr2L",
+                                                     start = 8240000,
+                                                     end = 8340000))
+
+my_colors <- c("#E69F00", "#999999", "#CC79A7", "#009E73", "#D55E00", "#56B4E9", "#F0E442")
+```
+
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+data.dmel <- data.H3K36me3.dmel
+data.dmel <- data.dmel[, colData(data.dmel)$bam.files %in% c("GFP_H3K36me3", "GFP_Input")]
+
+data.sub.dmel <- subsetByOverlaps(data.dmel, my_sub_ranges)
+my_coordinates <- rowMeans(as.data.frame(rowRanges(data.sub.dmel))[,2:3])
+
+par(mfrow=c(2,2), oma=c(4,3,4,3), mar=c(3,3,1,1), cex=0.7, mgp=c(2,0.75,0))
+
+for(i in 1:2){
+        
+        plot(my_coordinates/1000, assay(data.sub.dmel, 2)[,i],  
+             main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             type="l", ylab = "norm counts", ylim = c(0,15), xlab = "", col = my_colors[i])
+        
+        xx <- c((my_coordinates/1000), rev(my_coordinates/1000) )
+        yy <- c(assay(data.sub.dmel, 2)[,i], rep(0, length(my_coordinates)))
+        
+        polygon(xx, yy, border = NA, col =  my_colors[i])
+        
+        if(i == 2){mtext(text = paste(levels(seqnames(my_sub_ranges)), "[kb]"), side = 1, line = 2, cex=0.75)}
+        
+        my_density <- density(log2(assay(data.dmel, 2)[,i]+1), from=-1, to=5, adjust = 2)
+        
+        plot(my_density, main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             xlab = "", col =  my_colors[i], lwd=2)
+        
+        abline(v = my_density$x[which.max(my_density$y)], lty=3)
+        
+        if(i == 2){mtext(text ="log2 norm counts", side = 1, line = 2, cex=0.75)}
+}
+
+rm(list = "data.dmel")
+rm(list = "data.sub.dmel")
+```
+
+
+## ChIP coverage
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+my_sub_ranges <- makeGRangesFromDataFrame(data.frame(chr = "chr2L",
+                                                     start = 8130000,
+                                                     end = 8230000))
+my_colors <- c("#D55E00","#999999", "#CC79A7", "#009E73",  "#56B4E9","#E69F00",  "#F0E442")
+```
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+data.dmel <- data.H2Av.dmel
+data.dmel <- data.dmel[, colData(data.dmel)$bam.files %in% c("GFP_H2Av","GST_Input")]
+
+data.sub.dmel <- subsetByOverlaps(data.dmel, my_sub_ranges)
+my_coordinates <- rowMeans(as.data.frame(rowRanges(data.sub.dmel))[,2:3])
+
+par(mfrow=c(2,2), oma=c(4,3,4,3), mar=c(3,3,1,1), cex=0.7, mgp=c(2,0.75,0))
+
+for(i in 1:2){
+        
+        plot(my_coordinates/1000, assay(data.sub.dmel, 2)[,i],  
+             main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             type="l", ylab = "norm counts", ylim = c(0, 15), 
+             xlab = "", col = my_colors[i])
+        
+        xx <- c((my_coordinates/1000), rev(my_coordinates/1000) )
+        yy <- c(assay(data.sub.dmel, 2)[,i], rep(0, length(my_coordinates)))
+        
+        polygon(xx, yy, border = NA, col =  my_colors[i])
+        
+        if(i == 2){mtext(text = paste(levels(seqnames(my_sub_ranges)), "[kb]"), side = 1, line = 2, cex=0.75)}
+        
+                my_density <- density(log2(assay(data.dmel, 2)[,i]+1), from=-1, to=5, adjust = 2)
+        
+        plot(my_density, main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             xlab = "", col =  my_colors[i], lwd=2)
+        
+        abline(v = my_density$x[which.max(my_density$y)], lty=3)
+        
+        if(i == 2){mtext(text ="log2 norm counts", side = 1, line = 2, cex=0.75)}
+}
+
+rm(list = "data.dmel")
+rm(list = "data.sub.dmel")
+```
+
+
+## ChIP coverage
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+my_sub_ranges <- makeGRangesFromDataFrame(data.frame(chr = "chr2R",
+                                                     start = 5680000,
+                                                     end = 5720000))
+my_colors <- c("#0072B2", "#009E73", "#E69F00", "#D55E00", "#F0E442")
+```
+
+```{r, fig.align='center', fig.height=4, fig.width=5}
+data.dmel <- data.HMR.dmel
+data.dmel <- data.dmel[, colData(data.dmel)$bam.files %in% c("AL66_HMR", "TG04_HP1")]
+
+data.sub.dmel <- subsetByOverlaps(data.dmel, my_sub_ranges)
+my_coordinates <- rowMeans(as.data.frame(rowRanges(data.sub.dmel))[,2:3])
+
+par(mfrow=c(2,2), oma=c(4,3,4,3), mar=c(3,3,1,1), cex=0.7, mgp=c(2,0.75,0))
+
+for(i in 1:2){
+        
+        plot(my_coordinates/1000, assay(data.sub.dmel, 2)[,i],  
+             main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             type="l", ylab = "norm counts", ylim = c(0, ifelse(i == 1, 50, 15)), 
+             xlab = "", col = my_colors[i])
+        
+        xx <- c((my_coordinates/1000), rev(my_coordinates/1000) )
+        yy <- c(assay(data.sub.dmel, 2)[,i], rep(0, length(my_coordinates)))
+        
+        polygon(xx, yy, border = NA, col =  my_colors[i])
+        
+        if(i == 2){mtext(text = paste(levels(seqnames(my_sub_ranges)), "[kb]"), side = 1, line = 2, cex=0.75)}
+        
+                my_density <- density(log2(assay(data.dmel, 2)[,i]+1), from=-1, to=5, adjust = 2)
+        
+        plot(my_density, main = gsub(".*_","", colData(data.sub.dmel)$bam.files)[i],
+             xlab = "", col =  my_colors[i], lwd=2)
+        
+        abline(v = my_density$x[which.max(my_density$y)], lty=3)
+        
+        if(i == 2){mtext(text ="log2 norm counts", side = 1, line = 2, cex=0.75)}
+}
+
+rm(list = "data.dmel")
+rm(list = "data.sub.dmel")
+```
+
+
+
+
+
