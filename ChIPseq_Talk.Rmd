@@ -28,7 +28,7 @@ library(knitr)
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 
-Source: https://github.com/tschauer/ChIPseq_Talk
+**Source:** https://github.com/tschauer/ChIPseq_Talk
 
 ## Introduction
 
@@ -306,11 +306,12 @@ for(my_data_selection in my_data_folders){
 
 ## Background Normalization
 
-* use large bins (10 kb)
-* TMM - trimmed mean of M-values
-* trim away extreme values
-<p>&nbsp;</p>
+- use large bins (10 kb)
+- TMM - trimmed mean of M-values
+- trim away extreme values
+- Bioconductor: csaw package (Lun and Smyth)
 
+ 
 ## Background Normalization
 
 ```{r, fig.align='center', fig.height=3.25, fig.width=5}
@@ -445,7 +446,10 @@ for(my_data_selection in my_data_folders){
 
 ## Spike-In Normalization
 
-* Spike-In chromatin: synthetic or different species
+* Spike-In chromatin:
+<p>&nbsp;</p>
+  + synthetic
+  + different species
 * Cell number and chromatin amounts have to be constant!
 * Apply CPM or BG normalization on Spike-In reads
 
@@ -721,6 +725,8 @@ cat("Fisher´s exact test p-value <", format(ft$p.value, digits = 2, scientific 
 
 ## Peak Overlaps
 
+<p>&nbsp;</p>
+
 ```{r, fig.align='center', fig.height=3.5, fig.width=10, dpi=200, out.width='75%'}
 library(HelpersforChIPSeq)
 
@@ -772,7 +778,7 @@ plotRanges(ranges_2_region,
            my_title = "region #2", my_color = cbPalette[2])
 
 plotRanges(union(ranges_1_region, ranges_2_region),  my_region = my_region,  
-           my_title = "union - intersect", my_color = cbPalette[3])
+           my_title = "(union - intersect)", my_color = cbPalette[3])
 
 plotRanges(intersect(ranges_1_region, ranges_2_region),
            my_region = my_region, 
@@ -784,9 +790,7 @@ plot.new()
 abline(h = 2/4, lty=2)
 ```
 
-<p>&nbsp;</p>
 * Jaccard Similarity Index
-<p>&nbsp;</p>
 
 $$Jaccard = \frac{Length_{intersect}}{Length_{union} - Length_{intersect}}$$
 
@@ -1215,17 +1219,6 @@ text(x = 3.5, y = 0.5, cex = 0.9,
 
 * linear mixed effect model
 
-
-## Overview
-
-- Introduction
-- ChIP-seq  Coverage
-- Normalization Methods
-- Peak Overlaps
-- Statistical Analysis
-
-<p>&nbsp;</p>
-<p>&nbsp;</p>
 
 
 
