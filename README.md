@@ -4,9 +4,11 @@ Departmental Seminar 2021
 
 ### Overview
 
-- ChIP-seq data
-- Normalization
-- Statistics
+- Introduction
+- ChIP-seq  Coverage
+- Normalization Methods
+- Peak Overlaps
+- Statistical Analysis
 
 ### References
 
