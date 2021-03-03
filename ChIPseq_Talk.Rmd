@@ -805,16 +805,29 @@ abline(h = 2/4, lty=2)
 <p>&nbsp;</p>
 * Jaccard Similarity Index
 
-$$Jaccard = \frac{Length_{intersect}}{Length_{union} - Length_{intersect}}$$
+$$Jaccard = \frac{Length_{intersect}}{Length_{set1}+Length_{set2}-Length_{intersect}} = \frac{Length_{intersect}}{Length_{union}}$$
 
 ```{r, results='asis'}
 Jaccard <- function(gr1, gr2){
+        
         ri <- sum(width(intersect(gr1, gr2, ignore.strand = TRUE)))
         ru <- sum(width(union(gr1, gr2, ignore.strand = TRUE)))
+
+        JI <- ri/ru
+        return(JI)
+}
+
+Jaccard2 <- function(gr1, gr2){
+        
+        ri <- sum(width(intersect(gr1, gr2, ignore.strand = TRUE)))
+        ru <- sum(width(gr1))+sum(width(gr2))-ri
         
         JI <- ri/ru
         return(JI)
 }
+
+# identical(Jaccard(ranges_1_region, ranges_2_region),
+#           Jaccard2(ranges_1_region, ranges_2_region))
 
 JI <- Jaccard(ranges_1_region, ranges_2_region)
 ```
